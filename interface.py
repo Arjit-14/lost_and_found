@@ -67,6 +67,23 @@ st.markdown("""
 API_BASE = "https://lost-and-found-ls9g.onrender.com"
 
 def get_base64_image(image_path):
+    if not image_path:
+        return None
+    # Normalize backslashes (Windows) to forward slashes for URLs
+    image_path = image_path.replace('\\', '/')
+    if image_path.startswith('/'):
+        image_path = image_path[1:]
+    
+    # Give priority to fetching from the remote API
+    try:
+        url = f"{API_BASE}/{image_path}"
+        res = requests.get(url, timeout=5)
+        if res.status_code == 200:
+            return base64.b64encode(res.content).decode()
+    except Exception:
+        pass
+        
+    # Fallback to local files during development
     if os.path.exists(image_path):
         with open(image_path, "rb") as img_file:
             return base64.b64encode(img_file.read()).decode()
@@ -151,8 +168,13 @@ with tab1:
             for i, match in enumerate(results):
                 with cols[i % num_cols]:
                     with st.container(border=True):
-                        if match.get('image_path') and os.path.exists(match['image_path']):
-                            st.image(match['image_path'])
+                        img_path = match.get('image_path', '')
+                        if img_path:
+                            # Normalize path and Construct remote URL
+                            img_path = img_path.replace('\\', '/')
+                            if img_path.startswith('/'):
+                                img_path = img_path[1:]
+                            st.image(f"{API_BASE}/{img_path}")
                         else:
                             st.write("🖼️ *Image not available*")
 

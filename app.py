@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, Form
+from fastapi.staticfiles import StaticFiles
 import shutil
 import os
 import json
@@ -38,6 +39,7 @@ def get_text_similarity(query_text, db_text):
 
 # --- FastAPI Initialization ---
 app = FastAPI()
+app.mount("/found_items", StaticFiles(directory="found_items"), name="found_items")
 model = MobileNetV2(weights='imagenet', include_top=False, pooling='avg')
 
 DB_FILE = "found_items_db.json"
