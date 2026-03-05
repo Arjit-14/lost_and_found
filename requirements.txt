@@ -1,0 +1,11 @@
+streamlit
+requests
+folium
+streamlit-folium
+streamlit-js-eval
+fastapi
+uvicorn
+tensorflow-cpu
+scikit-learn
+nltk
+python-multipart
